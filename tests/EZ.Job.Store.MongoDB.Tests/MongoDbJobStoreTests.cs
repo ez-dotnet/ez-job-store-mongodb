@@ -1,5 +1,6 @@
 using EZ.Job.Core;
 using EZJob.Store.MongoDB;
+using Xunit;
 
 namespace EZ.Job.Store.MongoDB.Tests;
 
