@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EZ.Job.Store.MongoDB/EZ.Job.Store.MongoDB.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/EZ.Job.Store.MongoDB.Sample/EZ.Job.Store.MongoDB.Sample.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EZ.Job.Store.MongoDB.Tests/EZ.Job.Store.MongoDB.Tests.csproj" />
+  </Folder>
+</Solution>
