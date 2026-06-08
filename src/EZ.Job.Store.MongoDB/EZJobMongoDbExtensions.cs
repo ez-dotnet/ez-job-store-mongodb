@@ -20,6 +20,8 @@ public static class EZJobMongoDbExtensions
 
         builder.Services.AddSingleton<IJobStore>(_ =>
             new MongoDbJobStore(options.ConnectionString, options.DatabaseName, options.CollectionName));
+        builder.Services.AddSingleton<IRecurringStore>(_ =>
+            new MongoDbRecurringStore(options.ConnectionString, options.DatabaseName, options.RecurringCollectionName));
 
         return builder;
     }

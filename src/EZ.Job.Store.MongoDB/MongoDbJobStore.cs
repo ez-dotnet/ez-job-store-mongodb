@@ -81,7 +81,9 @@ public sealed class MongoDbJobStore : IJobStore
             Status = (int)job.Status,
             CreatedAt = job.CreatedAt,
             Error = job.Error,
-            RecurringJobId = job.RecurringJobId
+            RecurringJobId = job.RecurringJobId,
+            StartedAt = job.StartedAt,
+            CompletedAt = job.CompletedAt
         };
     }
 
@@ -96,6 +98,8 @@ public sealed class MongoDbJobStore : IJobStore
             (JobStatus)doc.Status,
             doc.CreatedAt,
             doc.Error,
+            doc.StartedAt,
+            doc.CompletedAt,
             doc.RecurringJobId);
     }
 }
@@ -111,4 +115,6 @@ internal sealed class JobDocument
     public DateTime CreatedAt { get; set; }
     public string? Error { get; set; }
     public string? RecurringJobId { get; set; }
+    public DateTime? StartedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
 }
