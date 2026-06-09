@@ -51,9 +51,20 @@ public sealed class MongoDbJobStore : IJobStore
     public async ValueTask UpdateStatusAsync(string id, JobStatus status, string? error = null, CancellationToken cancellationToken = default)
     {
         var filter = Builders<JobDocument>.Filter.Eq(j => j.Id, id);
+        var now = DateTime.UtcNow;
+
         var update = Builders<JobDocument>.Update
             .Set(j => j.Status, (int)status)
             .Set(j => j.Error, error);
+
+        if (status == JobStatus.Processing)
+        {
+            update = update.SetOnInsert(j => j.StartedAt, now);
+        }
+        else if (status is JobStatus.Succeeded or JobStatus.Failed)
+        {
+            update = update.Set(j => j.CompletedAt, now);
+        }
 
         await _collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
@@ -81,7 +92,9 @@ public sealed class MongoDbJobStore : IJobStore
             Status = (int)job.Status,
             CreatedAt = job.CreatedAt,
             Error = job.Error,
-            RecurringJobId = job.RecurringJobId
+            RecurringJobId = job.RecurringJobId,
+            StartedAt = job.StartedAt,
+            CompletedAt = job.CompletedAt
         };
     }
 
@@ -96,6 +109,8 @@ public sealed class MongoDbJobStore : IJobStore
             (JobStatus)doc.Status,
             doc.CreatedAt,
             doc.Error,
+            doc.StartedAt,
+            doc.CompletedAt,
             doc.RecurringJobId);
     }
 }
@@ -111,4 +126,6 @@ internal sealed class JobDocument
     public DateTime CreatedAt { get; set; }
     public string? Error { get; set; }
     public string? RecurringJobId { get; set; }
+    public DateTime? StartedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
 }
