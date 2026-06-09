@@ -51,9 +51,20 @@ public sealed class MongoDbJobStore : IJobStore
     public async ValueTask UpdateStatusAsync(string id, JobStatus status, string? error = null, CancellationToken cancellationToken = default)
     {
         var filter = Builders<JobDocument>.Filter.Eq(j => j.Id, id);
+        var now = DateTime.UtcNow;
+
         var update = Builders<JobDocument>.Update
             .Set(j => j.Status, (int)status)
             .Set(j => j.Error, error);
+
+        if (status == JobStatus.Processing)
+        {
+            update = update.SetOnInsert(j => j.StartedAt, now);
+        }
+        else if (status is JobStatus.Succeeded or JobStatus.Failed)
+        {
+            update = update.Set(j => j.CompletedAt, now);
+        }
 
         await _collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
